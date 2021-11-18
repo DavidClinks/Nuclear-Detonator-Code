@@ -22,7 +22,7 @@ case 5524: /*nuclear detonator clear world by Dav#7747*/
 //find if (btn.substr(0, 21) == "boxlvl1DepositedItem_")
 //if it doesn't exist, you can look for the group if (btn
 //and after that put this below
-                if (btn == "clearworldyes")
+if (btn == "clearworldyes")
 								{
 									auto iscontainsss = false;
 									SearchInventoryItem(peer, 5524, 1, iscontainsss);
