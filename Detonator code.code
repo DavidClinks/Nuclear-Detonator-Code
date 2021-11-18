@@ -1,0 +1,71 @@
+//Open tile.h
+//find case 6856: case 6858: case 6860: case 6862: case 9266: case 8186: case 8188:
+
+//put it on it
+case 5524: /*nuclear detonator clear world by Dav#7747*/
+			{
+				GTDialog myTest;
+				myTest.addLabelWithIcon("`wAre you sure?.", 5524, LABEL_BIG);
+				myTest.addSpacer(SPACER_SMALL);
+				myTest.addTextBox("`1Are you sure that you want to clear this world?");
+				myTest.addSpacer(SPACER_SMALL);
+				myTest.addButton("clearworldyes", "`w`2Yes, I want to clear this world.");
+				myTest.addButton("", "`4No, I don't want to clear this world.");
+				myTest.endDialog("", "", "");
+
+				Player::OnDialogRequest(peer, myTest.finishDialog());
+				return;
+			}
+      
+//Next
+//Open main.cpp
+//find if (btn.substr(0, 21) == "boxlvl1DepositedItem_")
+//if it doesn't exist, you can look for the group if (btn
+//and after that put this below
+                if (btn == "clearworldyes")
+								{
+									auto iscontainsss = false;
+									SearchInventoryItem(peer, 5524, 1, iscontainsss);
+									if (!iscontainsss)
+									{
+									}
+									if (!isWorldOwner(peer, world))
+									{
+										Player::OnTalkBubble(peer, static_cast<PlayerInfo*>(peer->data)->netID, "`oYou can use Detonator only in your owned worlds!", 0, true);
+										continue;
+									}
+									RemoveInventoryItem(5524, 1, peer, true);
+
+									for (auto i = 0; i < world->width * world->height; i++)
+									{
+										if (world->items[i].foreground == 6 || world->items[i].foreground == 8 || world->items[i].foreground == 242 || world->items[i].foreground == 2408 || world->items[i].foreground == 1796 || world->items[i].foreground == 4428 || world->items[i].foreground == 7188 || world->items[i].foreground == 8470 || world->items[i].foreground == 9290 || world->items[i].foreground == 9308 || world->items[i].foreground == 9504 || world->items[i].foreground == 2950 || world->items[i].foreground == 4802 || world->items[i].foreground == 5260 || world->items[i].foreground == 5814 || world->items[i].foreground == 5980 || world->items[i].foreground == 9640) continue;
+										if (world->items[i].foreground != 0 || world->items[i].background != 0)
+										{
+											world->items[i].foreground = 0;
+											world->items[i].background = 0;
+											PlayerMoving data3;
+											data3.packetType = 0x3;
+											data3.characterState = 0x0;
+											data3.x = i % world->width;
+											data3.y = i / world->height;
+											data3.punchX = i % world->width;
+											data3.punchY = i / world->width;
+											data3.XSpeed = 0;
+											data3.YSpeed = 0;
+											data3.netID = -1;
+											data3.plantingTree = 0;
+											for (ENetPeer* currentPeer6 = server->peers; currentPeer6 < &server->peers[server->peerCount]; ++currentPeer6)
+											{
+												if (currentPeer6->state != ENET_PEER_STATE_CONNECTED) continue;
+												if (isHere(peer, currentPeer6))
+												{
+													auto raw = packPlayerMoving(&data3);
+													raw[2] = 0;
+													raw[3] = 0;
+													SendPacketRaw(4, raw, 56, nullptr, currentPeer6, ENET_PACKET_FLAG_RELIABLE);
+												}
+											}
+
+										}
+									}
+								}
